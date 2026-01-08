@@ -1,0 +1,130 @@
+---
+description: Auto-run ARC linter on documentation changes
+globs: ["**/*.md"]
+alwaysApply: false
+---
+
+# ARC Auto-Lint Integration
+
+> THIS: Triggers ARC validation when documentation is modified.
+
+## When This Rule Activates
+
+This rule is invoked when:
+- Creating new .md files
+- Modifying existing .md files
+- Requesting documentation review
+
+---
+
+## Pre-Commit Validation
+
+Before committing changes to any .md file, run:
+
+```bash
+./arc-lint.sh [path/to/file.md]
+```
+
+If the file fails validation:
+1. Review the error messages
+2. Fix structural issues (header, footer, size)
+3. Re-run until passing
+
+---
+
+## Quick Fix Patterns
+
+### Missing TL;DR
+
+Add after the title:
+
+```markdown
+## TL;DR
+- [Most important action or fact]
+- [Second most important point]
+- [Third most important point]
+```
+
+### Missing Summary
+
+Add blockquote after H1:
+
+```markdown
+# Title
+> One-sentence summary that can stand alone.
+```
+
+### Missing CCA Annotations
+
+Add at section starts:
+
+```markdown
+HERE: What this section covers.
+THIS: What this content does.
+```
+
+### Missing Footer
+
+Add before end of file:
+
+```markdown
+---
+
+## Links
+
+LINK: Related to [Other Doc](./path.md) — why related
+```
+
+### File Too Large
+
+Split into sub-documents:
+1. Identify logical boundaries (major H2 sections)
+2. Extract to separate files
+3. Add cross-references with LINK:
+4. Update llms.txt
+
+---
+
+## Integration Commands
+
+```bash
+# Single file check
+./arc-lint.sh docs/file.md
+
+# All documentation
+./arc-lint.sh docs/
+
+# Generate llms.txt
+./arc-lint.sh --generate-llms
+
+# Git pre-commit hook
+#!/bin/bash
+./arc-lint.sh docs/ || exit 1
+```
+
+---
+
+## Cascade/Windsurf Integration
+
+When Cascade modifies .md files, it should:
+
+1. **Before writing**: Check if file exists, read TL;DR first
+2. **During writing**: Maintain header structure, add CCA annotations
+3. **After writing**: Run `./arc-lint.sh [file]` to validate
+
+KEEP: These steps are load-bearing for agent comprehension.
+Skipping validation risks creating unreadable documentation.
+
+---
+
+## Memory Integration
+
+If using Windsurf Memories:
+
+```
+Rule: Always run arc-lint.sh after modifying documentation
+Type: User-generated
+Scope: Project-specific
+```
+
+This ensures every documentation change is validated.

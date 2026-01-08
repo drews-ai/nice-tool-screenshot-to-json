@@ -1,0 +1,194 @@
+---
+description: Enforce agent-readable documentation structure based on "Lost in the Middle" research
+globs: ["**/*.md", "docs/**/*"]
+alwaysApply: true
+---
+
+# Agent-Readable Content (ARC) Rules
+
+> THIS: Rules for writing documentation that AI agents can actually read.
+> Based on Stanford's "Lost in the Middle" research (Liu et al., 2023).
+
+## The Problem You're Solving
+
+LLMs have a U-shaped attention curve:
+- First ~500 tokens: HIGH attention
+- Middle content: LOW attention (the "dead zone")
+- Last ~500 tokens: HIGH attention
+
+Content in the middle gets skimmed or ignored.
+
+---
+
+## Required Structure for All .md Files
+
+### 1. HEADER BLOCK (First 150 words) — HIGH ATTENTION ZONE
+
+Every markdown file MUST begin with:
+
+```markdown
+# Title
+> One-sentence summary that can stand alone without context
+
+## TL;DR
+- Most important point (action or fact)
+- Second most important point
+- Third most important point
+
+HERE: What problem this file addresses.
+THIS: What this file contains.
+```
+
+WAIT: Do not bury critical information below this header block.
+The header must be self-contained and answer: "What is this and why does it matter?"
+
+### 2. BODY CONTENT — THE DEAD ZONE
+
+Middle content will be retrieved on-demand, not always read in full.
+
+Structure for survival:
+- Use H2 headers every 300-500 words (retrieval chunk boundaries)
+- Each section should be independently understandable
+- No section should exceed 800 words without a subheader
+- Place "KEEP:" annotations before non-obvious patterns
+
+### 3. FOOTER BLOCK (Last 100 words) — HIGH ATTENTION ZONE
+
+Every markdown file MUST end with:
+
+```markdown
+---
+
+## Links
+
+LINK: Related to [Other Doc](./path.md) — brief reason
+LINK: Depends on [Dependency](./path.md) — what this provides
+LINK: See also [Reference](./path.md) — when to use
+
+## Metadata
+
+- Tokens: ~XXXX (approximate)
+- Last validated: YYYY-MM-DD
+```
+
+---
+
+## Cognitive Code Annotations (CCA)
+
+Use these prefixes to signal intent to agents:
+
+| Prefix | Purpose | Example |
+|--------|---------|---------|
+| `HERE:` | Grounds attention | "HERE: This is the auth module." |
+| `THIS:` | Explains behavior | "THIS: Converts dates to UTC." |
+| `KEEP:` | Marks intentional patterns | "KEEP: Empty catch is intentional." |
+| `WAIT:` | Pause before changes | "WAIT: Order is load-bearing." |
+| `ASK:`  | Prompt verification | "ASK: Is the API still v1?" |
+| `LINK:` | Explicit coupling | "LINK: Must match config.yaml:12" |
+
+---
+
+## Size Constraints
+
+| Metric | Limit | Why |
+|--------|-------|-----|
+| File size | < 4000 tokens | Fits in single retrieval chunk |
+| Header block | < 150 words | Survives truncation |
+| Section length | < 800 words | Sub-chunk addressable |
+| Sentence length | < 20 words | Reduces parsing errors |
+
+WAIT: Files exceeding 4000 tokens should be split into logical sub-documents.
+Large files get middle-truncated during retrieval.
+
+---
+
+## Anti-Patterns
+
+### ❌ Critical info buried in middle
+
+```markdown
+# Guide
+Some intro text...
+... 2000 words of context ...
+IMPORTANT: The API key must be rotated weekly.  ← LOST
+... more content ...
+```
+
+### ✅ Critical info in header
+
+```markdown
+# Guide
+> API key rotation is required weekly.
+
+## TL;DR
+- Rotate API keys every 7 days
+- Use the /rotate endpoint
+- Old keys expire after 24 hours
+
+HERE: API key management procedures.
+```
+
+### ❌ Long sentences
+
+```markdown
+The system processes incoming requests by first validating the authentication 
+token against the user database and then checking permissions before routing 
+to the appropriate handler which may trigger additional middleware.
+```
+
+### ✅ Short sentences
+
+```markdown
+The system validates auth tokens first.
+Then it checks permissions.
+Finally it routes to the handler.
+Middleware may trigger during routing.
+```
+
+---
+
+## Validation Checklist
+
+Before committing any .md file, verify:
+
+- [ ] First 150 words contain self-sufficient summary
+- [ ] TL;DR section exists with 2-4 bullet points
+- [ ] No critical information in middle 50% of file
+- [ ] File is under 4000 tokens (run `arc lint`)
+- [ ] Footer contains LINK: references
+- [ ] H2 headers appear every 300-500 words
+- [ ] Sentences average under 20 words
+
+---
+
+## Integration with llms.txt
+
+All documentation should be indexed in `/llms.txt`:
+
+```markdown
+# Project Name
+> One-line description
+
+## Core Documentation
+- [Architecture](./docs/architecture.md): System overview
+- [API Reference](./docs/api.md): Endpoints and auth
+
+## Optional
+- [Contributing](./CONTRIBUTING.md): Can skip if context-limited
+```
+
+Files in "Optional" section are skipped when context is constrained.
+
+---
+
+## When Writing New Documentation
+
+1. Start with the TL;DR — write it FIRST
+2. Expand each bullet into a section
+3. Add CCA annotations (HERE:, THIS:, KEEP:, etc.)
+4. Add LINK: references in footer
+5. Run `arc lint` before committing
+6. Update llms.txt if new file
+
+KEEP: This order is intentional.
+Starting with TL;DR forces clarity before expansion.

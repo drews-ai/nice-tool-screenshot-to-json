@@ -1,0 +1,16 @@
+# ARC Linter
+> Agent-Readable Content validator for AI-optimized documentation.
+
+## Core Documentation
+- [README](./README.md): Installation and usage guide
+- [AGENTS.md](./AGENTS.md): System-level instructions for AI agents
+
+## Rules & Validation
+- [ARC Rules](./.windsurf/rules/agent-readable-docs.mdc): Documentation structure rules
+- [Auto-Lint](./.windsurf/rules/arc-auto-lint.mdc): Validation integration
+
+## CLI Tool
+- [arc-lint.sh](./arc-lint.sh): Validation CLI tool
+
+## Installation
+- [install.sh](./install.sh): Safe installation script (merges without overwriting)

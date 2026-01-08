@@ -1,8 +1,11 @@
 # Screenshot to JSON
 
-Extract structured UI metadata from screenshots using vision LLMs.
+> Extract structured UI metadata from screenshots using vision LLMs.
 
 A poem by [nicetools.ai](https://nicetools.ai) — Drew Prescott
+
+HERE: This is a semantic UI extraction pipeline for screenshots.
+THIS: 5-pass LLM pipeline that outputs structured JSON with purposes, confidence scores, and page insights.
 
 ---
 
@@ -395,10 +398,10 @@ json_str = inventory.model_dump_json(indent=2)
 
 ## Links
 
-- LINK: See [TODO.md](TODO.md) for roadmap (marketing vocabulary expansion)
-- LINK: See [config/vocabulary.yaml](config/vocabulary.yaml) for element type definitions
-- LINK: [OpenRouter](https://openrouter.ai) for API access (recommended)
-- LINK: [Groq](https://console.groq.com) for free tier API
+LINK: See [TODO.md](TODO.md) for roadmap (marketing vocabulary expansion)
+LINK: See [config/vocabulary.yaml](config/vocabulary.yaml) for element type definitions
+LINK: [OpenRouter](https://openrouter.ai) for API access (recommended)
+LINK: [Groq](https://console.groq.com) for free tier API
 
 ---
 
