@@ -1,0 +1,52 @@
+# Interface Inventory System - Configuration
+# Copy this to config.yaml and customize as needed
+
+groq:
+  # Model selection
+  model_fast: meta-llama/llama-4-scout-17b-16e-instruct
+  model_quality: meta-llama/llama-4-maverick-17b-128e-instruct
+  
+  # Per-pass model assignment (defaults shown)
+  # pass_1_model: meta-llama/llama-4-scout-17b-16e-instruct
+  # pass_2_model: meta-llama/llama-4-scout-17b-16e-instruct
+  # pass_3_model: meta-llama/llama-4-maverick-17b-128e-instruct
+  # pass_4_model: meta-llama/llama-4-maverick-17b-128e-instruct
+  
+  # API settings
+  max_tokens: 4096
+  temperature: 0.1
+
+retry:
+  max_retries: 3
+  retry_delay_ms: 1000
+  backoff_multiplier: 2.0
+
+render:
+  # Canvas dimensions
+  width: 1200
+  height: 800
+  
+  # Colors
+  background_color: "#E5E5E5"
+  element_color: "#9E9E9E"
+  element_stroke: "#757575"
+  label_color: "#333333"
+  
+  # Typography
+  label_font: monospace
+  label_size: 10
+  
+  # Layout
+  zone_padding: 16
+  element_gap: 8
+  border_radius: 4
+  top_bar_height: 56
+  left_pane_ratio: 0.333
+
+confidence:
+  high: 0.9
+  medium: 0.7
+  low: 0.5
+  
+  # Generate v1/v2 alternatives below this threshold
+  alternative_threshold: 0.8

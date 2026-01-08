@@ -1,0 +1,413 @@
+# Interface Inventory System
+# Element Vocabulary & Classification Schema
+# Version: 2.0.0
+# 
+# CHANGES FROM v1:
+# - Added "modal" classification
+# - Collapsed overlapping element types (39 total, down from 40+)
+# - Removed "panel" container (right panels → left_pane)
+# - Capped nesting at 2 levels (blade, section only)
+# - Added field_type for ALL inputs
+# - Made content_nature REQUIRED on all elements
+# - Added per-element confidence scores
+# - Added empty_state, loading, error_state types
+
+version: "2.2.0"
+updated: "2026-01-07"
+
+# =============================================================================
+# SCREEN-LEVEL CLASSIFICATIONS
+# =============================================================================
+
+classifications:
+  application:
+    description: "Functional tool for accomplishing tasks"
+    has_zones: true
+    examples:
+      - "Email client (Gmail, Outlook)"
+      - "Banking app (Mercury, Chase)"
+      - "Project management (ClickUp, Asana)"
+      - "Analytics platform (Google Analytics, Ahrefs)"
+
+  dashboard:
+    description: "Metrics and monitoring focused interface"
+    has_zones: true
+    examples:
+      - "Analytics dashboards"
+      - "System monitoring"
+      - "KPI displays"
+
+  content_page:
+    description: "Marketing, editorial, or informational content"
+    has_zones: true
+    examples:
+      - "Blog posts"
+      - "Marketing landing pages"
+      - "Documentation"
+
+  form:
+    description: "Standalone form page - no surrounding chrome"
+    has_zones: false
+    note: "NO top_bar or left_pane - just content_area with form elements"
+    examples:
+      - "Multi-step checkout"
+      - "Survey/questionnaire"
+      - "Settings page (full-page)"
+
+  modal:
+    description: "Overlay/dialog style - centered, no navigation chrome"
+    has_zones: false
+    note: "NO top_bar or left_pane - like login pages, popups, dialogs"
+    examples:
+      - "Login/signup pages"
+      - "Confirmation dialogs"
+      - "Quick edit overlays"
+      - "Popup forms"
+
+  hybrid:
+    description: "Mix of application functionality and content"
+    has_zones: true
+    examples:
+      - "E-commerce product pages"
+      - "Social media feeds"
+
+  other:
+    description: "Does not fit established classifications"
+    has_zones: null
+    usage: "Include 'observed' field"
+
+
+# =============================================================================
+# CONTENT NATURE (REQUIRED ON ALL ELEMENTS)
+# =============================================================================
+
+content_natures:
+  data:
+    description: "Structured information from system/database"
+    examples: ["Transaction records", "Metrics", "User profiles", "Form values"]
+
+  editorial:
+    description: "Authored content, marketing, informational"
+    examples: ["Marketing copy", "Help text", "Instructions", "Blog content"]
+
+  user_generated:
+    description: "Content created by users"
+    examples: ["Comments", "Reviews", "Chat messages", "User input"]
+
+  system:
+    description: "Application-generated UI elements"
+    examples: ["Navigation labels", "Button text", "Status indicators", "Icons"]
+
+
+# =============================================================================
+# ELEMENT TYPES (39 TOTAL)
+# =============================================================================
+
+element_types:
+
+  # ---------------------------------------------------------------------------
+  # STRUCTURE (6 types)
+  # ---------------------------------------------------------------------------
+  
+  structure:
+    nav_list:
+      description: "Navigation menu items"
+      modifiers: ["item_count", "label"]
+
+    tab_group:
+      description: "Tabs for switching views"
+      modifiers: ["item_count", "label"]
+
+    action_bar:
+      description: "Horizontal controls row (filters, tools, actions)"
+      note: "Replaces toolbar and filter_bar"
+      modifiers: ["control_count", "label"]
+
+    breadcrumb:
+      description: "Hierarchical path indicator"
+      modifiers: ["label"]
+
+    pagination:
+      description: "Page navigation controls"
+      modifiers: ["label"]
+
+    divider:
+      description: "Visual separator"
+      modifiers: ["label"]
+
+
+  # ---------------------------------------------------------------------------
+  # CONTAINERS (2 types - max depth: 2)
+  # ---------------------------------------------------------------------------
+  
+  containers:
+    blade:
+      description: "Horizontal grouping - elements side-by-side"
+      supports_children: true
+      cannot_contain: ["blade"]
+
+    section:
+      description: "Vertical grouping with optional label"
+      note: "Replaces panel, card containers"
+      supports_children: true
+      cannot_contain: ["section"]
+      modifiers: ["label"]
+
+
+  # ---------------------------------------------------------------------------
+  # COLLECTIONS (3 types)
+  # ---------------------------------------------------------------------------
+  
+  collections:
+    list:
+      description: "Repeating items - vertical, grid, or feed layout"
+      note: "Replaces item_list, card_grid, activity_feed"
+      modifiers: ["item_count", "layout", "label"]
+      layouts: ["vertical", "grid", "feed"]
+
+    data_table:
+      description: "Rows and columns with headers"
+      modifiers: ["row_count", "columns", "label"]
+
+    calendar:
+      description: "Time-based layout"
+      modifiers: ["view_type", "label"]
+      view_types: ["day", "week", "month", "year"]
+
+
+  # ---------------------------------------------------------------------------
+  # DATA DISPLAY (8 types)
+  # ---------------------------------------------------------------------------
+  
+  data_display:
+    metric:
+      description: "Value with label and optional trend"
+      modifiers: ["label", "has_trend"]
+
+    field_value:
+      description: "Read-only key-value pair"
+      modifiers: ["label"]
+
+    badge:
+      description: "Status indicator or tag"
+      modifiers: ["label"]
+
+    chart:
+      description: "Data visualization"
+      modifiers: ["variant", "label", "series_count"]
+      variants: ["line", "bar", "pie", "area", "donut", "sparkline"]
+
+    avatar:
+      description: "User/entity image"
+      modifiers: ["label"]
+
+    media:
+      description: "Image, video, attachment"
+      modifiers: ["media_type", "label"]
+      media_types: ["image", "video", "audio", "document", "attachment"]
+
+    progress_bar:
+      description: "Progress indicator"
+      modifiers: ["label", "value"]
+
+    icon:
+      description: "Standalone icon"
+      modifiers: ["label"]
+
+
+  # ---------------------------------------------------------------------------
+  # CONTENT (3 types)
+  # ---------------------------------------------------------------------------
+  
+  content:
+    heading:
+      description: "Title or section header"
+      modifiers: ["label", "level"]
+
+    text_block:
+      description: "Paragraph(s) of text"
+      modifiers: ["label"]
+
+    content_area:
+      description: "Dense reading region"
+      modifiers: ["label"]
+
+
+  # ---------------------------------------------------------------------------
+  # INPUT (10 types) - ALL require field_type
+  # ---------------------------------------------------------------------------
+  
+  input:
+    text_input:
+      description: "Single-line text field"
+      modifiers: ["label", "field_type", "placeholder"]
+      field_types: ["text", "name", "email", "phone", "url", "search", "password", "number", "currency", "username", "company", "address", "city", "zip", "other"]
+
+    text_area:
+      description: "Multi-line text field"
+      modifiers: ["label", "field_type", "placeholder"]
+      field_types: ["description", "comment", "message", "notes", "bio", "address", "other"]
+
+    selector:
+      description: "Dropdown/picker"
+      modifiers: ["label", "field_type", "option_count"]
+      field_types: ["single", "multi", "country", "state", "category", "status", "other"]
+
+    toggle:
+      description: "On/off switch"
+      modifiers: ["label", "field_type"]
+      field_types: ["boolean", "preference", "feature", "other"]
+
+    checkbox:
+      description: "Multi-select or boolean"
+      modifiers: ["label", "field_type"]
+      field_types: ["agreement", "selection", "preference", "other"]
+
+    radio:
+      description: "Single-select from options"
+      modifiers: ["label", "field_type", "option_count"]
+      field_types: ["choice", "preference", "tier", "other"]
+
+    date_input:
+      description: "Date/time picker"
+      modifiers: ["label", "field_type"]
+      field_types: ["date", "time", "datetime", "daterange"]
+
+    rich_text:
+      description: "Formatted text editor"
+      modifiers: ["label", "field_type"]
+      field_types: ["document", "email_body", "post", "other"]
+
+    file_input:
+      description: "File upload"
+      modifiers: ["label", "field_type"]
+      field_types: ["image", "document", "video", "any", "other"]
+
+    search_bar:
+      description: "Dedicated search input with integrated controls"
+      modifiers: ["label", "placeholder"]
+      note: "Use for prominent search interfaces; for inline search fields use text_input with field_type=search"
+
+
+  # ---------------------------------------------------------------------------
+  # ACTION (3 types)
+  # ---------------------------------------------------------------------------
+  
+  action:
+    button:
+      description: "Action button"
+      modifiers: ["label", "variant"]
+      variants: ["primary", "secondary", "destructive", "ghost"]
+
+    action_link:
+      description: "Text action"
+      modifiers: ["label"]
+
+    icon_action:
+      description: "Icon-only action"
+      modifiers: ["label"]
+
+
+  # ---------------------------------------------------------------------------
+  # FEEDBACK (3 types)
+  # ---------------------------------------------------------------------------
+  
+  feedback:
+    empty_state:
+      description: "No-content placeholder"
+      modifiers: ["label"]
+
+    loading:
+      description: "Loading indicator"
+      modifiers: ["label"]
+
+    error_state:
+      description: "Error display"
+      modifiers: ["label"]
+
+
+  # ---------------------------------------------------------------------------
+  # SPECIAL (1 type)
+  # ---------------------------------------------------------------------------
+  
+  special:
+    unknown:
+      description: "Unrecognized element"
+      required_modifiers: ["observed", "closest"]
+
+
+# =============================================================================
+# REQUIRED FIELDS
+# =============================================================================
+
+required_on_all_elements:
+  - type
+  - content_nature
+  - confidence
+
+required_on_inputs:
+  - field_type
+
+
+# =============================================================================
+# ZONES
+# =============================================================================
+
+zones:
+  top_bar:
+    present_when: "classification in [application, dashboard, content_page, hybrid]"
+    never_when: "classification in [form, modal]"
+
+  left_pane:
+    present_when: "classification has sidebar (including right panels)"
+    never_when: "classification in [form, modal]"
+    note: "RIGHT-side panels are represented here too - all panels → left_pane"
+
+  content_area:
+    present_when: "ALWAYS"
+
+
+# =============================================================================
+# TYPE QUICK REFERENCE (39 total)
+# =============================================================================
+
+type_list:
+  - nav_list
+  - tab_group
+  - action_bar
+  - breadcrumb
+  - pagination
+  - divider
+  - blade
+  - section
+  - list
+  - data_table
+  - calendar
+  - metric
+  - field_value
+  - badge
+  - chart
+  - avatar
+  - media
+  - progress_bar
+  - icon
+  - heading
+  - text_block
+  - content_area
+  - text_input
+  - text_area
+  - selector
+  - toggle
+  - checkbox
+  - radio
+  - date_input
+  - rich_text
+  - file_input
+  - search_bar
+  - button
+  - action_link
+  - icon_action
+  - empty_state
+  - loading
+  - error_state
+  - unknown

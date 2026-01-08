@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe Renderer - Demo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { 
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #F0F0F0;
+      margin: 0;
+      padding: 24px;
+    }
+    h1 { margin: 0 0 4px; font-size: 20px; }
+    .subtitle { margin: 0 0 20px; color: #666; font-size: 13px; }
+    #wireframe { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+    .info-bar {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: #1F2937;
+      color: #FFF;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    .info-bar code { color: #93C5FD; font-family: monospace; }
+    .legend {
+      margin-top: 12px;
+      display: flex;
+      gap: 20px;
+      font-size: 11px;
+      color: #666;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-box {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Wireframe Renderer</h1>
+  <p class="subtitle">Deterministic SVG rendering from extraction JSON. Hover elements for metadata.</p>
+  
+  <div id="wireframe"></div>
+  
+  <div class="info-bar">
+    <strong>Event Log:</strong> <span id="log">Hover or click any element...</span>
+  </div>
+  
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-box" style="background:#FFF;border:1px solid #E0E0E0"></div>
+      <span>Leaf Element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box" style="background:#F8FAFB;border:1px solid #E0E0E0"></div>
+      <span>Container</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box" style="background:#FFF;border:2px dashed #EF4444"></div>
+      <span>Low Confidence (&lt;70%)</span>
+    </div>
+  </div>
+
+  <!-- Load stub library first, then renderer -->
+  <script src="element-stubs.js"></script>
+  <script src="wireframe-renderer.js"></script>
+  
+  <script>
+    // Your actual extraction data
+    const inventory = {
+      "sequence": 1,
+      "screen": {
+        "classification": "application",
+        "intent": "Analyze website traffic and SEO metrics in detail",
+        "source": "Ahrefs dashboard screenshot"
+      },
+      "zones": {
+        "top_bar": [
+          {
+            "type": "nav_list",
+            "content_nature": "system",
+            "confidence": 0.95,
+            "purpose": "navigate to main ahrefs tools and sections",
+            "children": [
+              {
+                "type": "action_link",
+                "confidence": 0.95,
+                "purpose": "view ahrefs dashboard for overall SEO metrics",
+                "label": "Dashboard"
+              },
+              {
+                "type": "action_link",
+                "confidence": 0.95,
+                "purpose": "access keyword research and analysis tools",
+                "label": "Keywords Explorer"
+              }
+            ]
+          }
+        ],
+        "left_pane": [
+          {
+            "type": "nav_list",
+            "content_nature": "system",
+            "confidence": 0.95,
+            "purpose": "navigate through ahrefs projects and related sections",
+            "children": [
+              {
+                "type": "action_link",
+                "confidence": 0.95,
+                "purpose": "view and manage ahrefs projects",
+                "label": "Projects"
+              },
+              {
+                "type": "action_link",
+                "confidence": 0.95,
+                "purpose": "view and manage ahrefs portfolios",
+                "label": "Portfolios"
+              }
+            ]
+          }
+        ],
+        "content_area": [
+          {
+            "type": "data_table",
+            "content_nature": "data",
+            "confidence": 0.95,
+            "purpose": "display project SEO metrics and performance data",
+            "row_count": 1,
+            "columns": ["Project", "Health Score", "Domain Rating", "Referring domains", "Total visitors", "Organic traffic", "Organic keywords"],
+            "children": [
+              {
+                "type": "blade",
+                "content_nature": "data",
+                "confidence": 0.9,
+                "purpose": "display individual project row with SEO metrics",
+                "children": [
+                  {
+                    "type": "field_value",
+                    "confidence": 0.95,
+                    "purpose": "show project name for identification",
+                    "label": "Smiley dental"
+                  },
+                  {
+                    "type": "metric",
+                    "confidence": 0.95,
+                    "purpose": "show project health score for SEO performance",
+                    "label": "Health Score"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "confidence": 0.97,
+      "page_insights": {
+        "primary_action": "analyze and manage website SEO metrics",
+        "data_focus": "website traffic and SEO performance data",
+        "user_journey_stage": "core_task",
+        "page_type": "dashboard"
+      },
+      "app_context": {
+        "name": "ahrefs.com"
+      },
+      "version": "2.1.0"
+    };
+
+    // Create renderer
+    const wf = new WireframeRenderer('#wireframe', {
+      width: 800,
+      brandColor: '#FF6B35',  // Ahrefs orange
+      showTooltip: true,
+      showZoneLabels: true
+    });
+
+    // Render
+    wf.render(inventory);
+
+    // Event listeners
+    const log = document.getElementById('log');
+    
+    wf.on('hover', (el, path) => {
+      if (el) {
+        log.innerHTML = `<strong>Hover:</strong> <code>${path}</code> → <strong>${el.type}</strong>${el.label ? ' "' + el.label + '"' : ''}`;
+      }
+    });
+
+    wf.on('click', (el, path) => {
+      log.innerHTML = `
+        <strong>Click:</strong> <code>${path}</code><br>
+        Type: <strong>${el.type}</strong> | 
+        Label: ${el.label || '—'} | 
+        Confidence: ${Math.round((el.confidence || 1) * 100)}%
+      `;
+      console.log('Clicked:', { element: el, path });
+    });
+  </script>
+</body>
+</html>
